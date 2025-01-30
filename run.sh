@@ -1,0 +1,15 @@
+npm run migrate:FbcStock
+#npm run migrate:FbcStockUpdate
+#npm run migrate:FbcStockUpdate
+#npm run migrate:FbcStorageCategory
+#npm run migrate:FullIndexJob
+#npm run migrate:OfferAudit
+#npm run migrate:OfferAuditDelta
+#npm run migrate:OfferAuditDelta
+#npm run migrate:offerMessageRecord
+#npm run migrate:OfferConfig
+#npm run migrate:Offers
+#npm run migrate:Price
+#npm run migrate:Products
+#npm run migrate:Shop
+#npm run migrate:StockEventMessage

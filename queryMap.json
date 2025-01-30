@@ -1,0 +1,15 @@
+{
+    "FbcStock": "select * from c",
+    "FbcStockUpdate": "select * from c",
+    "FbcStorageCategory": "select * from c",
+    "FullIndexJob": "select * from c",
+    "OfferAudit": "select * from c",
+    "OfferAuditDelta": "select * from c",
+    "offerMessageRecord": "select * from c",
+    "OfferConfig": "select * from c",
+    "Offers": "select * from c",
+    "Price": "select * from c",
+    "Products": "select * from c",
+    "Shop": "select * from c",
+    "StockEventMessage": "select * from c"
+}

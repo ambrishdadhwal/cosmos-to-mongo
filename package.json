@@ -1,0 +1,31 @@
+{
+    "name": "cosmos-to-mongo",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "migrate:FbcStock": "node -r dotenv/config ./scripts/FbcStock-migration.js",
+        "migrate:FbcStockUpdate": "node -r dotenv/config ./scripts/FbcStockUpdate-migration.js",
+        "migrate:FbcStorageCategory": "node -r dotenv/config ./scripts/FbcStorageCategory-migration.js",
+        "migrate:FullIndexJob": "node -r dotenv/config ./scripts/FullIndexJob-migration.js",
+        "migrate:OfferAudit": "node -r dotenv/config ./scripts/OfferAudit-migration.js",
+        "migrate:OfferAuditDelta": "node -r dotenv/config ./scripts/OfferAuditDelta-migration.js",
+        "migrate:offerMessageRecord": "node -r dotenv/config ./scripts/offerMessageRecord-migration.js",
+        "migrate:OfferConfig": "node -r dotenv/config ./scripts/OfferConfig-migration.js",
+        "migrate:Offers": "node -r dotenv/config ./scripts/Offers-migration.js",
+        "migrate:Price": "node -r dotenv/config ./scripts/Price-migration.js",
+        "migrate:Products": "node -r dotenv/config ./scripts/Products-migration.js",
+        "migrate:Shop": "node -r dotenv/config ./scripts/Shop-migration.js",
+        "migrate:StockEventMessage": "node -r dotenv/config ./scripts/StockEventMessage-migration.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "@azure/cosmos": "^4.1.1",
+        "dotenv": "^16.4.7",
+        "lodash": "^4.17.21",
+        "moment": "^2.30.1",
+        "mongodb": "^6.9.0"
+    }
+}
