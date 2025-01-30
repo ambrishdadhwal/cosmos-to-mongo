@@ -32,9 +32,9 @@ const getConnectionString = (dbConfig) => {
             throw new Error('MongoDB Credentials is missing');
         }
 		
-		const encodedPass = _.escape(password);
+		//const encodedPass = _.escape(password);
 
-        connectionString = `mongodb+srv://${username}:${encodedPass}@${host}/${databaseName}?retryWrites=true&w=majority`;
+        connectionString = `mongodb+srv://${username}:${password}@${host}/${databaseName}?retryWrites=true&w=majority`;
     }
 	console.log('connectionString ----', connectionString);
 
@@ -45,8 +45,8 @@ const getFiltersByCollectionName = (collectionName, item) => {
     if (collectionName === 'addressAreas') {
         return { country: item.country };
     } else {
-         return { _id: item._id, updatedAt: { $lte: item.updatedAt } }
-         //return { _ts: item._ts }
+         //return { _id: item._id, updatedAt: { $lte: item.updatedAt } }
+         return { offerId: item.offerId }
     }
 }
 

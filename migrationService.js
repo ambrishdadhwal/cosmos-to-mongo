@@ -6,6 +6,7 @@ const { mongo: MongoConfig, cosmos: CosmosConfig } = config;
 const QueryMap = require('./queryMap.json');
 const { getConnectionString, getQueryByContainerId, getFiltersByCollectionName, mapper } = require('./utils');
 const { promises: fsp } = require('fs');
+const { ObjectId } = require('mongodb');
 
 const logFileNamePrefix = 'cosmos-to-mongo-migration';
 
@@ -51,21 +52,25 @@ module.exports = class MigrationService {
 		// Reading items in batches
 		do {
 			const query = getQueryByContainerId(containerId);
+			console.log('cosmos query -->', query)
 			const { resources, continuation } = await cosmosContainer.items
 				.query({
 					query,
 					parameters: [],
 				}, {
-					maxItemCount: config.BATCH_SIZE,
+					maxItemCount: 1000,
 					continuationToken
 				})
 				.fetchNext();
 			items = [...resources];
 			this.docCount += items.length;
-			//await this.bulkUpsertToMongoDB({ collectionName: containerId, items });
-			await this.insertMongo({ collectionName: containerId, items });
+			await this.bulkUpsertToMongoDB({ collectionName: containerId, items });
+			//await this.insertMongo({ collectionName: containerId, items });
 			continuationToken = continuation;
-		} while (continuationToken && items.length <= config.BATCH_SIZE);
+			console.log('continuationToken--', continuationToken);
+			console.log('continuation --', continuation);
+			console.log('items.length ---> ', items.length);
+		} while (continuationToken && items.length <= 1000);
 	}
 
 	async insertMongo({ collectionName, items }) {
@@ -110,30 +115,31 @@ module.exports = class MigrationService {
 
 		// Creating bulk operations
 		const bulkOps = items.map((item) => {
-			const _id = item.id;
-			item = mapper(collectionName, item);
-			const filter = getFiltersByCollectionName(collectionName, { _id, ...item });
-			console.log('Item to insert----', item);
-
-			return {
-				updateOne: {
-					update: {
-						$setOnInsert: { _id },
-						$set: { ...item }
-					},
-					upsert: true,
-				},
-			};
+			//console.log('Current item --> ', item);
+		    const _id = item.id;
+			//console.log('_id for mongo....', _id);
+		    item = mapper(collectionName, item);
+			const filter = getFiltersByCollectionName(collectionName, {...item });
+			//console.log('Filter for collection:----', filter);
+			//console.log('Item to insert --> ', item);
+		    return {
+		        updateOne: {
+		            filter: filter,
+		            update: {
+		                $setOnInsert:  { },
+		                $set: { ...item }
+		            },
+		            upsert: true,
+		        },
+		    };
 		});
 
 		try {
 			// Perform bulk upsert
-			console.log('collection is:----', collection);
+			//console.log('collection is:----', collection);
 			const result = await collection.bulkWrite(bulkOps);
-			console.log('modifiedCount for collection:----', result.modifiedCount);
-			console.log('Filter for upsertedCount:----', result.upsertedCount);
-			console.log('Filter for insertedCount:----', result.insertedCount);
-			console.log('Filter for matchedCount:----', result.matchedCount);
+			var a = `\nBulk upsert complete for ${collectionName}: ${result.modifiedCount} modified, ${result.upsertedCount} upserted, ${result.insertedCount} inserted, ${result.matchedCount} matched.`;
+			console.log(a);
 			await fsp.appendFile(this.logFileName, `\nBulk upsert complete for ${collectionName}: ${result.modifiedCount} modified, ${result.upsertedCount} upserted, ${result.insertedCount} inserted, ${result.matchedCount} matched.`);
 		} catch (error) {
 			await fsp.appendFile(this.errorLogFileName, `\nError during bulk upsert: ${JSON.stringify(error)}`);
@@ -145,7 +151,7 @@ module.exports = class MigrationService {
 			console.log('Starting migration...');
 			await this.initServices();
 
-			this.checkMongoConnection();
+			//this.checkMongoConnection();
 			console.log('All dependencies initialized.');
 			await fsp.appendFile(this.logFileName, `\nMigrating collection:, ${this.collection}.\nStarted at: ${new Date().toISOString()}`);
 			console.time(`Time taken in migration ${this.collection} collection`);
